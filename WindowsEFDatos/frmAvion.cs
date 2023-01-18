@@ -47,28 +47,48 @@ namespace WindowsEFDatos
 
         private void btnInsertar_Click(object sender, EventArgs e)
         {
-            Avion avion = new Avion() {
-                Capacidad = Convert.ToInt32(txtCapacidad.Text),
-                Denominación = txtDenominacion.Text,
-                LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue) 
-            };
-
-
-            int filasAfectadas = AbmAvion.Insertar(avion);
-
-            if (filasAfectadas > 0)
+            if (validarInsert())
             {
-                lblMsjInsertar.ForeColor = Color.Green;
-                lblMsjInsertar.Text = "Insert ok";
-                limpiar();
-                MostrarTodosAviones();
+                Avion avion = new Avion()
+                {
+                    Capacidad = Convert.ToInt32(txtCapacidad.Text),
+                    Denominación = txtDenominacion.Text,
+                    LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue)
+                };
+
+
+                int filasAfectadas = AbmAvion.Insertar(avion);
+
+                if (filasAfectadas > 0)
+                {
+                    lblMsjInsertar.ForeColor = Color.Green;
+                    lblMsjInsertar.Text = "Insert ok";
+                    limpiar();
+                    MostrarTodosAviones();
+
+                }
+                else
+                {
+                    lblMsjInsertar.ForeColor = Color.Red;
+                    lblMsjInsertar.Text = "Error al insertar";
+                }
 
             }
             else
             {
-                lblMsjInsertar.ForeColor = Color.Red;
-                lblMsjInsertar.Text = "Error al insertar";
+                MessageBox.Show("Debe completar todos los datos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private bool validarInsert()
+        {
+            if (txtCapacidad.Text == "")
+            { return false; }
+            else if (txtDenominacion.Text == "")
+            { return false; }
+            else if (cboLineasAereas.SelectedIndex <= 0)
+            { return false; }
+            return true;
         }
 
         private void limpiar()
@@ -90,61 +110,100 @@ namespace WindowsEFDatos
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            int filasAfectadas = AbmAvion.Eliminar(Convert.ToInt32(txtId.Text));
-
-            if (filasAfectadas > 0)
+            if (validar())
             {
-                lblMsjEliminar.ForeColor = Color.Green;
-                lblMsjEliminar.Text = "Delete ok";
-                limpiar();
-                MostrarTodosAviones();
+                int filasAfectadas = AbmAvion.Eliminar(Convert.ToInt32(txtId.Text));
 
+                if (filasAfectadas > 0)
+                {
+                    lblMsjEliminar.ForeColor = Color.Green;
+                    lblMsjEliminar.Text = "Delete ok";
+                    limpiar();
+                    MostrarTodosAviones();
+
+                }
+                else
+                {
+                    lblMsjEliminar.ForeColor = Color.Red;
+                    lblMsjEliminar.Text = "Error al eliminar";
+                }
             }
             else
             {
-                lblMsjEliminar.ForeColor = Color.Red;
-                lblMsjEliminar.Text = "Error al eliminar";
+                MessageBox.Show("Debe completar todos los datos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+        }
+
+        private bool validar()
+        {
+            if (txtCapacidad.Text == "")
+            { return false; }
+            else if (txtId.Text == "")
+            { return false; }
+            else if (txtDenominacion.Text == "")
+            { return false; }
+            else if (cboLineasAereas.SelectedIndex <=0)
+            { return false; }
+            return true;
         }
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            Avion avion = new Avion()
+            if (validar())
             {
-                Capacidad = Convert.ToInt32(txtCapacidad.Text),
-                Denominación = txtDenominacion.Text,
-                LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue),
-                IdAvion = Convert.ToInt32(txtId.Text)
-            };
+                Avion avion = new Avion()
+                {
+                    Capacidad = Convert.ToInt32(txtCapacidad.Text),
+                    Denominación = txtDenominacion.Text,
+                    LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue),
+                    IdAvion = Convert.ToInt32(txtId.Text)
+                };
 
-            int filasAfectadas = AbmAvion.Editar(avion);
+                int filasAfectadas = AbmAvion.Editar(avion);
 
-            if (filasAfectadas > 0)
-            {
-                lblMsjEditar.ForeColor = Color.Green;
-                lblMsjEditar.Text = "Update ok";
-                limpiar();
-                MostrarTodosAviones();
+                if (filasAfectadas > 0)
+                {
+                    lblMsjEditar.ForeColor = Color.Green;
+                    lblMsjEditar.Text = "Update ok";
+                    limpiar();
+                    MostrarTodosAviones();
 
+                }
+                else
+                {
+                    lblMsjEditar.ForeColor = Color.Red;
+                    lblMsjEditar.Text = "Error al actualizar";
+                }
             }
             else
             {
-                lblMsjEditar.ForeColor = Color.Red;
-                lblMsjEditar.Text = "Error al actualizar";
+                MessageBox.Show("Debe completar todos los datos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+
 
 
         }
 
         private void btnPorId_Click(object sender, EventArgs e)
         {
-            Avion avion = AbmAvion.TraerUno(Convert.ToInt32(txtId.Text));
-           
-            limpiar();
-            lblMsjPorId.Text = $"ID: {avion.IdAvion}" +
-                $"\nCapacidad: {avion.Capacidad}" +
-                $"\nDenominacion: {avion.Denominación}";
-         
+            if (txtId.Text!= "")
+            {
+                Avion avion = AbmAvion.TraerUno(Convert.ToInt32(txtId.Text));
+
+                limpiar();
+                lblMsjPorId.Text = $"ID: {avion.IdAvion}" +
+                    $"\nCapacidad: {avion.Capacidad}" +
+                    $"\nDenominacion: {avion.Denominación}";
+
+
+            }
+            else
+            {
+                MessageBox.Show("Debe completar todos los datos", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void cboLineasAereas_SelectionChangeCommitted(object sender, EventArgs e)
