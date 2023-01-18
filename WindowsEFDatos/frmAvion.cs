@@ -24,12 +24,20 @@ namespace WindowsEFDatos
         {
             //LineaAerea lineaAerea = new LineaAerea()
             //{
-            //    Nombre = "Aerolineas Argentinas",
+            //    Nombre = "LAN",
             //    FechaInicioActividades = DateTime.Now,
             //};
             //AbmLineaAerea.Insertar(lineaAerea);
-            
+
+            CargarCombo();
             MostrarTodosAviones();
+        }
+
+        private void CargarCombo()
+        {
+            cboLineasAereas.DataSource = AbmLineaAerea.Listar();
+            cboLineasAereas.DisplayMember = "Nombre";
+            cboLineasAereas.ValueMember = "IdLinea";
         }
 
         private void MostrarTodosAviones()
@@ -39,13 +47,12 @@ namespace WindowsEFDatos
 
         private void btnInsertar_Click(object sender, EventArgs e)
         {
-           
             Avion avion = new Avion() {
                 Capacidad = Convert.ToInt32(txtCapacidad.Text),
-                Denominación= txtDenominacion.Text,
-                LineaAereaId=1 //Para facilidad queda siempre la aerolinea cargada en bd
+                Denominación = txtDenominacion.Text,
+                LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue) 
             };
-            
+
 
             int filasAfectadas = AbmAvion.Insertar(avion);
 
@@ -68,6 +75,82 @@ namespace WindowsEFDatos
         {
             txtCapacidad.Text = "";
             txtDenominacion.Text = "";
+            txtId.Text = "";
+            cboLineasAereas.SelectedValue = 0;
+        }
+
+        private void dgvAviones_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txtId.Text = dgvAviones.Rows[e.RowIndex].Cells[0].Value.ToString();
+            txtCapacidad.Text = dgvAviones.Rows[e.RowIndex].Cells[1].Value.ToString();
+            txtDenominacion.Text = dgvAviones.Rows[e.RowIndex].Cells[2].Value.ToString();
+            cboLineasAereas.SelectedIndex = (int)dgvAviones.Rows[e.RowIndex].Cells[4].Value;
+
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            int filasAfectadas = AbmAvion.Eliminar(Convert.ToInt32(txtId.Text));
+
+            if (filasAfectadas > 0)
+            {
+                lblMsjEliminar.ForeColor = Color.Green;
+                lblMsjEliminar.Text = "Delete ok";
+                limpiar();
+                MostrarTodosAviones();
+
+            }
+            else
+            {
+                lblMsjEliminar.ForeColor = Color.Red;
+                lblMsjEliminar.Text = "Error al eliminar";
+            }
+        }
+
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Avion avion = new Avion()
+            {
+                Capacidad = Convert.ToInt32(txtCapacidad.Text),
+                Denominación = txtDenominacion.Text,
+                LineaAereaId = Convert.ToInt32(cboLineasAereas.SelectedValue),
+                IdAvion = Convert.ToInt32(txtId.Text)
+            };
+
+            int filasAfectadas = AbmAvion.Editar(avion);
+
+            if (filasAfectadas > 0)
+            {
+                lblMsjEditar.ForeColor = Color.Green;
+                lblMsjEditar.Text = "Update ok";
+                limpiar();
+                MostrarTodosAviones();
+
+            }
+            else
+            {
+                lblMsjEditar.ForeColor = Color.Red;
+                lblMsjEditar.Text = "Error al actualizar";
+            }
+
+
+        }
+
+        private void btnPorId_Click(object sender, EventArgs e)
+        {
+            Avion avion = AbmAvion.TraerUno(Convert.ToInt32(txtId.Text));
+           
+            limpiar();
+            lblMsjPorId.Text = $"ID: {avion.IdAvion}" +
+                $"\nCapacidad: {avion.Capacidad}" +
+                $"\nDenominacion: {avion.Denominación}";
+         
+        }
+
+        private void cboLineasAereas_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            
+
         }
     }
 }

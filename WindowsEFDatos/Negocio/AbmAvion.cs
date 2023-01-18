@@ -21,5 +21,20 @@ namespace WindowsEFDatos.DAC
         {
             return DacAvion.Insert(avion);
         }
+
+        public static int Editar(Avion avion)
+        {
+            return DacAvion.Update(avion);
+        }
+
+        public static int Eliminar(int id)
+        {
+            return DacAvion.Delete(id);
+        }
+
+        public static Avion TraerUno(int id)
+        {
+            return DacAvion.SelectById(id);
+        }
     }
 }
